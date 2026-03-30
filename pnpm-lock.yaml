@@ -10,8 +10,8 @@ catalogs:
       specifier: ^0.84.2
       version: 0.84.2
     effect:
-      specifier: ^3.21.0
-      version: 3.21.0
+      specifier: 4.0.0-beta.43
+      version: 4.0.0-beta.43
     effect-solutions:
       specifier: ^0.5.2
       version: 0.5.2
@@ -47,7 +47,7 @@ importers:
     dependencies:
       effect:
         specifier: 'catalog:'
-        version: 3.21.0
+        version: 4.0.0-beta.43
     devDependencies:
       typescript:
         specifier: ~5.9.3
@@ -63,7 +63,7 @@ importers:
     dependencies:
       effect:
         specifier: 'catalog:'
-        version: 3.21.0
+        version: 4.0.0-beta.43
     devDependencies:
       '@types/node':
         specifier: ^25.5.0
@@ -757,9 +757,6 @@ packages:
     engines: {bun: '>=1.1.0'}
     hasBin: true
 
-  effect@3.21.0:
-    resolution: {integrity: sha512-PPN80qRokCd1f015IANNhrwOnLO7GrrMQfk4/lnZRE/8j7UPWrNNjPV0uBrZutI/nHzernbW+J0hdqQysHiSnQ==}
-
   effect@4.0.0-beta.43:
     resolution: {integrity: sha512-AJYyDimIwJOn87uUz/JzmgDc5GfjxJbXvEbTvNzMa+M3Uer344bLo/O5mMRkqc1vBleA+Ygs4+dbE3QsqOkKTQ==}
 
@@ -774,10 +771,6 @@ packages:
   extend-shallow@2.0.1:
     resolution: {integrity: sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==}
     engines: {node: '>=0.10.0'}
-
-  fast-check@3.23.2:
-    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
-    engines: {node: '>=8.0.0'}
 
   fast-check@4.6.0:
     resolution: {integrity: sha512-h7H6Dm0Fy+H4ciQYFxFjXnXkzR2kr9Fb22c0UBpHnm59K2zpr2t13aPTHlltFiNT6zuxp6HMPAVVvgur4BLdpA==}
@@ -977,9 +970,6 @@ packages:
   postcss@8.5.8:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
     engines: {node: ^10 || ^12 || >=14}
-
-  pure-rand@6.1.0:
-    resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
 
   pure-rand@8.4.0:
     resolution: {integrity: sha512-IoM8YF/jY0hiugFo/wOWqfmarlE6J0wc6fDK1PhftMk7MGhVZl88sZimmqBBFomLOCSmcCCpsfj7wXASCpvK9A==}
@@ -1663,11 +1653,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  effect@3.21.0:
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      fast-check: 3.23.2
-
   effect@4.0.0-beta.43:
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -1688,10 +1673,6 @@ snapshots:
   extend-shallow@2.0.1:
     dependencies:
       is-extendable: 0.1.1
-
-  fast-check@3.23.2:
-    dependencies:
-      pure-rand: 6.1.0
 
   fast-check@4.6.0:
     dependencies:
@@ -1885,8 +1866,6 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-
-  pure-rand@6.1.0: {}
 
   pure-rand@8.4.0: {}
 
