@@ -6,9 +6,14 @@
   "scripts": {
     "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
     "dev": "vp run website#dev",
-    "prepare": "vp config"
+    "effect-solutions": "node node_modules/effect-solutions/bin.js",
+    "typecheck": "vp run typecheck -r",
+    "prepare": "vp config && vp exec effect-language-service patch"
   },
   "devDependencies": {
+    "@effect/language-service": "catalog:",
+    "effect-solutions": "catalog:",
+    "typescript": "catalog:",
     "vite-plus": "catalog:"
   },
   "engines": {
