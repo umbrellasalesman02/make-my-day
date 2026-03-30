@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { ensureBunIsInstalled, getAccessUrls, resolveConfig } from "./env.js";
 
 function printStartupSummary(
+  bunBin: string,
   host: string,
   port: number,
   token: string,
@@ -9,6 +10,7 @@ function printStartupSummary(
 ): void {
   const urls = getAccessUrls(host, port, tailscaleIp);
   console.log("[agent-gui] Starting T3 Code remote server");
+  console.log(`[agent-gui] Bun binary:  ${bunBin}`);
   console.log(`[agent-gui] Local URL:   ${urls.local}`);
   console.log(`[agent-gui] Bound URL:   ${urls.host}`);
   if (urls.tailnet) {
@@ -50,10 +52,10 @@ async function main(): Promise<void> {
   const preflight = args.has("--preflight");
   const skipBuild = args.has("--skip-build");
 
-  ensureBunIsInstalled();
   const config = await resolveConfig(process.env);
+  ensureBunIsInstalled(config.bunBin);
 
-  printStartupSummary(config.host, config.port, config.token, config.tailscaleIp);
+  printStartupSummary(config.bunBin, config.host, config.port, config.token, config.tailscaleIp);
 
   if (preflight) {
     console.log("[agent-gui] Preflight checks passed.");
@@ -61,11 +63,11 @@ async function main(): Promise<void> {
   }
 
   if (!skipBuild) {
-    await runCommand("bun", ["run", "build"], config.t3RepoDir);
+    await runCommand(config.bunBin, ["run", "build"], config.t3RepoDir);
   }
 
   const child = spawn(
-    "bun",
+    config.bunBin,
     [
       "run",
       "--cwd",

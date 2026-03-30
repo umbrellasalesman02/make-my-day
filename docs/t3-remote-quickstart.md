@@ -5,11 +5,23 @@ This quickstart launches T3 Code as a web app that can be opened from your phone
 ## 1) Install prerequisites
 
 ```bash
+vp install
 bun --version
 tailscale ip -4
 ```
 
-If either command fails, install or connect that tool first.
+Notes:
+
+- This repo now includes `bun` as an `apps/agent-gui` dependency, so `vp install` will fetch it.
+- If `bun --version` still fails, approve install scripts and reinstall:
+
+```bash
+vp pm approve-builds
+vp install
+```
+
+- Global Bun still works too.
+- `tailscale ip -4` must return a valid Tailnet IPv4.
 
 ## 2) Set environment
 
@@ -20,9 +32,11 @@ export T3CODE_REPO_DIR="$HOME/dev/t3code"
 export T3CODE_PORT=3773
 export T3CODE_HOST="$(tailscale ip -4)"
 export T3CODE_AUTH_TOKEN="$(openssl rand -hex 24)"
+export BUN_BIN=bun
 ```
 
 `T3CODE_HOST` can be omitted; the launcher auto-detects `tailscale ip -4` and falls back to `127.0.0.1`.
+`BUN_BIN` can point to a specific Bun binary if needed.
 
 ## 3) Run preflight
 

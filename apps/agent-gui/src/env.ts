@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 
 export type AgentGuiConfig = {
+  readonly bunBin: string;
   readonly t3RepoDir: string;
   readonly port: number;
   readonly host: string;
@@ -24,11 +25,11 @@ function parsePort(rawPort: string | undefined): number {
   return parsed;
 }
 
-export function ensureBunIsInstalled(): void {
-  const result = spawnSync("bun", ["--version"], { stdio: "ignore" });
+export function ensureBunIsInstalled(bunBin: string): void {
+  const result = spawnSync(bunBin, ["--version"], { stdio: "ignore" });
   if (result.status !== 0) {
     throw new Error(
-      "Bun is required for T3 remote startup. Install Bun and verify with `bun --version`.",
+      `Bun is required for T3 remote startup. Unable to execute "${bunBin} --version". If Bun is a local dependency, ensure install scripts were approved (try \`vp pm approve-builds\`).`,
     );
   }
 }
@@ -55,11 +56,13 @@ export async function resolveConfig(env: NodeJS.ProcessEnv): Promise<AgentGuiCon
   await access(t3RepoDir, constants.R_OK);
 
   const tailscaleIp = detectTailscaleIpv4();
+  const bunBin = env.BUN_BIN?.trim() || "bun";
   const host = env.T3CODE_HOST?.trim() || tailscaleIp || "127.0.0.1";
   const port = parsePort(env.T3CODE_PORT);
   const token = env.T3CODE_AUTH_TOKEN?.trim() || randomBytes(24).toString("hex");
 
   return {
+    bunBin,
     t3RepoDir,
     host,
     port,
