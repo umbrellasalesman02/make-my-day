@@ -39,6 +39,8 @@ function runWithEnv(env: NodeJS.ProcessEnv): Promise<void> {
 
 async function main(): Promise<void> {
   const tailnetIp = detectTailscaleIpv4();
+  const disableAuthRaw = process.env.T3CODE_DISABLE_AUTH || "0";
+  const disableAuth = /^(1|true|yes|on)$/i.test(disableAuthRaw);
   const guessedRepo = await firstReadablePath([
     join(homedir(), "dev", "t3code"),
     join(homedir(), "code", "t3code"),
@@ -48,11 +50,22 @@ async function main(): Promise<void> {
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     BUN_BIN: process.env.BUN_BIN || "bun",
+    T3CODE_PROJECT_ROOT: process.env.T3CODE_PROJECT_ROOT || "/Users/erikwiberg/dev/codex",
     T3CODE_PORT: process.env.T3CODE_PORT || "3773",
     T3CODE_HOST: process.env.T3CODE_HOST || tailnetIp || "127.0.0.1",
-    T3CODE_AUTH_TOKEN: process.env.T3CODE_AUTH_TOKEN || randomBytes(24).toString("hex"),
+    T3CODE_DISABLE_AUTH: disableAuthRaw,
+    T3CODE_AUTH_TOKEN: disableAuth
+      ? process.env.T3CODE_AUTH_TOKEN
+      : process.env.T3CODE_AUTH_TOKEN || randomBytes(24).toString("hex"),
+    T3CODE_LOG_WS_EVENTS: process.env.T3CODE_LOG_WS_EVENTS || "1",
+    T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD:
+      process.env.T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD || "1",
     T3CODE_REPO_DIR: process.env.T3CODE_REPO_DIR || guessedRepo || "",
   };
+
+  if (disableAuth) {
+    delete env.T3CODE_AUTH_TOKEN;
+  }
 
   if (!env.T3CODE_REPO_DIR) {
     throw new Error(
@@ -64,6 +77,12 @@ async function main(): Promise<void> {
   console.log(`[agent-gui] T3CODE_REPO_DIR=${env.T3CODE_REPO_DIR}`);
   console.log(`[agent-gui] T3CODE_HOST=${env.T3CODE_HOST}`);
   console.log(`[agent-gui] T3CODE_PORT=${env.T3CODE_PORT}`);
+  console.log(`[agent-gui] T3CODE_DISABLE_AUTH=${env.T3CODE_DISABLE_AUTH}`);
+  console.log(`[agent-gui] T3CODE_PROJECT_ROOT=${env.T3CODE_PROJECT_ROOT}`);
+  console.log(`[agent-gui] T3CODE_LOG_WS_EVENTS=${env.T3CODE_LOG_WS_EVENTS}`);
+  console.log(
+    `[agent-gui] T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD=${env.T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD}`,
+  );
   console.log(`[agent-gui] BUN_BIN=${env.BUN_BIN}`);
 
   await runWithEnv(env);

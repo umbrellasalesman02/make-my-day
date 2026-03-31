@@ -6,9 +6,14 @@ import { spawnSync } from "node:child_process";
 export type AgentGuiConfig = {
   readonly bunBin: string;
   readonly t3RepoDir: string;
+  readonly projectRoot: string;
   readonly port: number;
   readonly host: string;
   readonly token: string;
+  readonly disableAuth: boolean;
+  readonly wsUrl: string;
+  readonly logWebSocketEvents: boolean;
+  readonly autoBootstrapProjectFromCwd: boolean;
   readonly tailscaleIp: string | null;
 };
 
@@ -23,6 +28,20 @@ function parsePort(rawPort: string | undefined): number {
     throw new Error(`Invalid T3CODE_PORT: ${rawPort}`);
   }
   return parsed;
+}
+
+function parseBoolean(rawValue: string | undefined, fallback: boolean): boolean {
+  if (!rawValue || rawValue.trim().length === 0) {
+    return fallback;
+  }
+  const normalized = rawValue.trim().toLowerCase();
+  if (normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on") {
+    return true;
+  }
+  if (normalized === "0" || normalized === "false" || normalized === "no" || normalized === "off") {
+    return false;
+  }
+  return fallback;
 }
 
 export function ensureBunIsInstalled(bunBin: string): void {
@@ -57,18 +76,35 @@ export async function resolveConfig(env: NodeJS.ProcessEnv): Promise<AgentGuiCon
 
   await access(t3RepoDir, constants.R_OK);
 
+  const projectRoot = env.T3CODE_PROJECT_ROOT?.trim() || "/Users/erikwiberg/dev/codex";
+  await access(projectRoot, constants.R_OK);
+
   const tailscaleIp = detectTailscaleIpv4();
   const bunBin = env.BUN_BIN?.trim() || "bun";
   const host = env.T3CODE_HOST?.trim() || tailscaleIp || "127.0.0.1";
   const port = parsePort(env.T3CODE_PORT);
   const token = env.T3CODE_AUTH_TOKEN?.trim() || randomBytes(24).toString("hex");
+  const disableAuth = parseBoolean(env.T3CODE_DISABLE_AUTH, false);
+  const wsUrl = disableAuth
+    ? `ws://${host}:${port}`
+    : `ws://${host}:${port}/?token=${encodeURIComponent(token)}`;
+  const logWebSocketEvents = parseBoolean(env.T3CODE_LOG_WS_EVENTS, true);
+  const autoBootstrapProjectFromCwd = parseBoolean(
+    env.T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD,
+    true,
+  );
 
   return {
     bunBin,
     t3RepoDir,
+    projectRoot,
     host,
     port,
     token,
+    disableAuth,
+    wsUrl,
+    logWebSocketEvents,
+    autoBootstrapProjectFromCwd,
     tailscaleIp,
   };
 }
