@@ -41,7 +41,9 @@ export function detectTailscaleIpv4(): string | null {
   }
 
   const ip = result.stdout.trim();
-  if (ip.length === 0) {
+  const ipv4Pattern =
+    /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+  if (!ipv4Pattern.test(ip)) {
     return null;
   }
   return ip;

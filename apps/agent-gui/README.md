@@ -5,6 +5,7 @@ Thin launcher app for running T3 Code as a remote-friendly web server.
 ## Scripts
 
 - `vp run agent-gui#start` - Build and start T3 Code server
+- `vp run agent-gui#start:remote` - One-go startup with auto-filled env values
 - `vp run agent-gui#preflight` - Validate Bun, env, and connectivity prerequisites
 
 ## Required Environment

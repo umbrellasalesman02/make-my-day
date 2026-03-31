@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "tsc -p tsconfig.json && node dist/start.js",
+    "start:remote": "tsc -p tsconfig.json && node dist/quickstart.js",
     "preflight": "tsc -p tsconfig.json && node dist/start.js --preflight",
     "typecheck": "tsc --noEmit"
   },

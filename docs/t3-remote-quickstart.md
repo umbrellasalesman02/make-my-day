@@ -2,6 +2,16 @@
 
 This quickstart launches T3 Code as a web app that can be opened from your phone over Tailscale.
 
+## Fastest path (one command)
+
+```bash
+vp run agent-gui:remote
+```
+
+This command auto-sets host/port/token defaults and tries to infer `T3CODE_REPO_DIR` from common locations (`~/dev/t3code`, `~/code/t3code`, `~/src/t3code`).
+
+If inference fails, set `T3CODE_REPO_DIR` and rerun.
+
 ## 1) Install prerequisites
 
 ```bash

@@ -7,6 +7,7 @@
     "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
     "dev": "vp run website#dev",
     "agent-gui:start": "vp run agent-gui#start",
+    "agent-gui:remote": "vp run agent-gui#start:remote",
     "deployer:smoke": "vp run deployer#smoke",
     "mvp:smoke": "vp run agent-gui#preflight && vp run deployer#smoke",
     "effect-solutions": "node node_modules/effect-solutions/bin.js",
