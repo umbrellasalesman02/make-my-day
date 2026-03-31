@@ -1,11 +1,22 @@
 import { spawn } from "node:child_process";
 import { ensureBunIsInstalled, getAccessUrls, resolveConfig } from "./env.js";
 
+function maskWsUrlForLogs(rawWsUrl: string): string {
+  try {
+    const parsed = new URL(rawWsUrl);
+    if (parsed.searchParams.has("token")) {
+      parsed.searchParams.set("token", "<redacted>");
+    }
+    return parsed.toString();
+  } catch {
+    return rawWsUrl;
+  }
+}
+
 function printStartupSummary(
   bunBin: string,
   host: string,
   port: number,
-  token: string,
   disableAuth: boolean,
   wsUrl: string,
   projectRoot: string,
@@ -27,10 +38,7 @@ function printStartupSummary(
     );
   }
   console.log(`[agent-gui] Auth mode:  ${disableAuth ? "disabled (debug)" : "enabled"}`);
-  if (!disableAuth) {
-    console.log(`[agent-gui] Auth token: ${token}`);
-  }
-  console.log(`[agent-gui] VITE_WS_URL: ${wsUrl}`);
+  console.log(`[agent-gui] VITE_WS_URL: ${maskWsUrlForLogs(wsUrl)}`);
   console.log(`[agent-gui] Auto-bootstrap: ${autoBootstrapProjectFromCwd ? "on" : "off"}`);
   console.log(`[agent-gui] WS event logs: ${logWebSocketEvents ? "on" : "off"}`);
 }
@@ -71,7 +79,6 @@ async function main(): Promise<void> {
     config.bunBin,
     config.host,
     config.port,
-    config.token,
     config.disableAuth,
     config.wsUrl,
     config.projectRoot,
@@ -86,6 +93,8 @@ async function main(): Promise<void> {
   }
 
   if (!skipBuild) {
+    // The T3 web client must know the exact websocket URL (including token when auth is enabled),
+    // otherwise remote sessions can load HTTP but fail to attach to WS and time out on commands.
     await runCommand(config.bunBin, ["run", "build"], config.t3RepoDir, {
       ...process.env,
       VITE_WS_URL: config.wsUrl,
@@ -105,6 +114,8 @@ async function main(): Promise<void> {
     ...(!config.disableAuth ? (["--auth-token", config.token] as const) : []),
   ];
 
+  // Keep CLI auth flags and env token state aligned. If env still carries T3CODE_AUTH_TOKEN while
+  // "debug no-auth" is requested, server config precedence can unintentionally re-enable auth.
   const serverEnv: NodeJS.ProcessEnv = { ...process.env };
   if (config.disableAuth) {
     delete serverEnv.T3CODE_AUTH_TOKEN;
@@ -113,6 +124,7 @@ async function main(): Promise<void> {
   }
 
   const child = spawn("node", serverArgs, {
+    // T3 auto-bootstrap derives the initial project from server process cwd.
     cwd: config.projectRoot,
     stdio: "inherit",
     env: serverEnv,
